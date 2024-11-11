@@ -17,7 +17,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PageviewIcon from '@mui/icons-material/Pageview';
 import Snippet from "@/models/Snippet";
 import { useSelector, useDispatch } from "react-redux";
-import { addSnippet, setNew, setCurrentSnippet } from "@/state/snippets/snippetsSlice";
+import { addSnippet, setNew, setCurrentSnippet, removeSnippet } from "@/state/snippets/snippetsSlice";
 import { RootState } from '@/state/store';
 
 import mockSnippets from '@/mock.json';
@@ -25,11 +25,11 @@ import mockSnippets from '@/mock.json';
 const Snippets = () => {
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const [menuTarget, setMenuTarget] = useState<string>('');
     const snippets = useSelector((state: RootState) => state.snippets.snippets);
     
     useEffect(() => {
-        // Load snippets
-
+        // Load snippets from mock data
         mockSnippets.map((snippet : Snippet) => {
             dispatch(addSnippet(snippet));
         })
@@ -52,7 +52,12 @@ const Snippets = () => {
             <List>
                 <ListItem 
                     secondaryAction={
-                        <IconButton aria-label="comments" onClick={handleClick}>
+                        <IconButton 
+                            onClick={(event: MouseEvent<HTMLButtonElement>) => {
+                                handleClick(event)
+                                setMenuTarget("Data Science Instructor")
+                            }}
+                        >
                             <MoreHorizIcon/>
                         </IconButton>
                     }
@@ -67,6 +72,34 @@ const Snippets = () => {
                         <ListItemText>{"Data Science Instructor"}</ListItemText>
                     </ListItemButton>
                 </ListItem>
+
+                {Object.keys(snippets).map((title: string) => {
+                    return (
+                        <ListItem 
+                            secondaryAction={
+                                <IconButton 
+                                    onClick={(event: MouseEvent<HTMLButtonElement>) => {
+                                        handleClick(event)
+                                        setMenuTarget(title)
+                                    }}
+                                >
+                                    <MoreHorizIcon/>
+                                </IconButton>
+                            }
+                            disableGutters
+                        >
+                            <ListItemButton onClick={() => copySnippet(title)}>
+                                <Tooltip title={snippets[title].substring(0,101)}>
+                                    <ListItemIcon>
+                                        <PageviewIcon />
+                                    </ListItemIcon>    
+                                </Tooltip>
+                                <ListItemText>{title}</ListItemText>
+                            </ListItemButton>
+                        </ListItem>
+                    )
+                })}
+                
             </List>
 
             <Menu
@@ -94,7 +127,12 @@ const Snippets = () => {
                         Edit
                     </MenuItem>
                 </Link>
-                <MenuItem onClick={handleClose}>Delete</MenuItem>
+                <MenuItem onClick={() => {
+                    handleClose()
+                    dispatch(removeSnippet("Data Science Instructor"))
+                }}>
+                    Delete
+                </MenuItem>
             </Menu>
 
             <Box>
