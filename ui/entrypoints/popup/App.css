@@ -1,0 +1,30 @@
+#root {
+  max-width: 1280px;
+  min-height: 480px;
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  display: block;
+}
+
+.title {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+}
+
+.container {
+  margin-top: 7rem;
+  padding: 0;
+  height: 100%;
+}
+
+.main-content {
+  padding: 1rem;
+}
+
+Link {
+  color: white;
+}
