@@ -9,12 +9,13 @@ import {
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/state/store';
-import { clearCurrentSnippet } from '@/state/snippets/snippetsSlice';
+import { addSnippet, clearCurrentSnippet, removeSnippet, setNotNew } from '@/state/snippets/snippetsSlice';
 
 const CreateAndEdit = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const currentSnippet = useSelector((state: RootState) => state.snippets.currentSnippet);
+    const isNew = useSelector((state: RootState) => state.snippets.isNew);
     const [title, setTitle] = useState<string>(currentSnippet?.title || '');
     const [text, setText] = useState<string>(currentSnippet?.text || '');
 
@@ -27,6 +28,15 @@ const CreateAndEdit = () => {
     }
 
     const handleSave = () => {
+        if (isNew) {
+            dispatch(addSnippet({ title: title, text: text }));
+        } else {
+            if (title !== currentSnippet?.title) {
+                dispatch(removeSnippet(currentSnippet?.title || ''));
+            }
+            dispatch(addSnippet({ title: title, text: text }));
+        }
+
         navigate('/');
         dispatch(clearCurrentSnippet());
     }
@@ -56,11 +66,20 @@ const CreateAndEdit = () => {
             </Box>
 
             <Box>
-                <Button variant="contained" disabled={!(title !== (currentSnippet?.title || '') || text !== (currentSnippet?.text || ''))} onClick={handleSave}>
+                <Button 
+                    variant="contained" 
+                    disabled={
+                        !(title !== (currentSnippet?.title) || text !== (currentSnippet?.text)) || (title == '' || text == '')
+                    } 
+                    onClick={handleSave}
+                >
                     Save
                 </Button>
                 <Link to='/'>
-                    <Button variant="text" style={{ color: '#d1c4e9' }} onClick={() => dispatch(clearCurrentSnippet())}>
+                    <Button variant="text" style={{ color: '#d1c4e9' }} onClick={() => {
+                        dispatch(clearCurrentSnippet())
+                        dispatch(setNotNew())
+                    }}>
                         Cancel
                     </Button>
                 </Link>
