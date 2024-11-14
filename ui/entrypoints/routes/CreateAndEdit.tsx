@@ -37,8 +37,9 @@ const CreateAndEdit = () => {
             dispatch(addSnippet({ title: title, text: text }));
         }
 
-        navigate('/');
         dispatch(clearCurrentSnippet());
+        dispatch(setNotNew())
+        navigate('/');
     }
 
     return (
@@ -75,11 +76,11 @@ const CreateAndEdit = () => {
                 >
                     Save
                 </Button>
-                <Link to='/'>
-                    <Button variant="text" style={{ color: '#d1c4e9' }} onClick={() => {
-                        dispatch(clearCurrentSnippet())
-                        dispatch(setNotNew())
-                    }}>
+                <Link to='/' onClick={() => {
+                    dispatch(clearCurrentSnippet())
+                    dispatch(setNotNew())
+                }}>
+                    <Button variant="text" style={{ color: '#d1c4e9' }}>
                         Cancel
                     </Button>
                 </Link>

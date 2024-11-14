@@ -17,8 +17,8 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PageviewIcon from '@mui/icons-material/Pageview';
 import Snippet from "@/models/Snippet";
 import { useSelector, useDispatch } from "react-redux";
-import { addSnippet, setNew, setCurrentSnippet, removeSnippet } from "@/state/snippets/snippetsSlice";
-import { RootState } from '@/state/store';
+import { addSnippet, setNew, setCurrentSnippet, removeSnippet, setNotNew } from "@/state/snippets/snippetsSlice";
+import { RootState, persistor } from '@/state/store';
 
 import mockSnippets from '@/mock.json';
 
@@ -29,7 +29,8 @@ const Snippets = () => {
     const snippets = useSelector((state: RootState) => state.snippets.snippets);
     
     useEffect(() => {
-        // Load snippets from mock data
+        // TODO: async load snippets from db
+
         mockSnippets.map((snippet : Snippet) => {
             dispatch(addSnippet(snippet));
         })
@@ -119,17 +120,20 @@ const Snippets = () => {
                   'aria-labelledby': 'basic-button',
                 }}
             >
-                <Link to='/edit'>
-                    <MenuItem onClick={() => {
-                        handleClose()
-                        dispatch(setCurrentSnippet("Data Science Instructor"))
-                    }}>
+                <Link to='/edit' onClick={() => {
+                    dispatch(setNotNew())
+                    dispatch(setCurrentSnippet(menuTarget))
+                    handleClose()
+                }}>
+                    <MenuItem>
                         Edit
                     </MenuItem>
                 </Link>
                 <MenuItem onClick={() => {
+                    dispatch(removeSnippet(menuTarget))
                     handleClose()
-                    dispatch(removeSnippet("Data Science Instructor"))
+
+                    // TODO: remove snippet from db
                 }}>
                     Delete
                 </MenuItem>
@@ -139,7 +143,7 @@ const Snippets = () => {
                 <Link to='/edit' onClick={() => dispatch(setNew())}>
                     <Button variant="contained">New Snippet</Button>
                 </Link>
-                <Link to='/login'>
+                <Link to='/login' onClick={persistor.purge}>
                     <Button variant="text" style={{ color: '#d1c4e9' }}>
                         Logout
                     </Button>

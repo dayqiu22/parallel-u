@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import './style.css';
 import { Provider } from 'react-redux';
-import { store } from '../../state/store';
+import { store, persistor } from '@/state/store';
+import { PersistGate } from 'redux-persist/integration/react'
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/material/styles';
 import { deepPurple } from '@mui/material/colors';
@@ -22,9 +23,11 @@ const theme = createTheme({
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
+      </PersistGate>
     </Provider>
   </React.StrictMode>,
 );
