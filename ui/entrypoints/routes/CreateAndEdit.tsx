@@ -1,15 +1,14 @@
-import React, { useState, useEffect, MouseEvent } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
     Box, 
     Button,
-    Menu,
-    MenuItem,
     TextField
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/state/store';
 import { addSnippet, clearCurrentSnippet, removeSnippet, setNotNew } from '@/state/snippets/snippetsSlice';
+import { setDiff } from '@/state/diff/diffSlice';
 
 const CreateAndEdit = () => {
     const navigate = useNavigate();
@@ -38,7 +37,8 @@ const CreateAndEdit = () => {
         }
 
         dispatch(clearCurrentSnippet());
-        dispatch(setNotNew())
+        dispatch(setNotNew());
+        dispatch(setDiff());
         navigate('/');
     }
 

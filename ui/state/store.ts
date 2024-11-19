@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import snippetsReducer from './snippets/snippetsSlice'
+import diffReducer from './diff/diffSlice'
 import { persistStore, persistReducer } from "redux-persist";
 import { combineReducers } from '@reduxjs/toolkit';
 import storage from 'redux-persist/lib/storage'
@@ -10,7 +11,8 @@ const persistConfig = {
 }
 
 const rootReducer = combineReducers({
-  snippets: snippetsReducer
+  snippets: snippetsReducer,
+  diff: diffReducer
 })
  
 const persistedReducer = persistReducer(persistConfig, rootReducer);

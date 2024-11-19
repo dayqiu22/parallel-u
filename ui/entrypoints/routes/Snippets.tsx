@@ -19,12 +19,14 @@ import Snippet from "@/models/Snippet";
 import { useSelector, useDispatch } from "react-redux";
 import { addSnippet, setNew, setCurrentSnippet, removeSnippet, setNotNew, clearSnippets } from "@/state/snippets/snippetsSlice";
 import { RootState, persistor } from '@/state/store';
+import { setDiff, unsetDiff } from '@/state/diff/diffSlice';
 
 const Snippets = () => {
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [menuTarget, setMenuTarget] = useState<string>('');
     const snippets = useSelector((state: RootState) => state.snippets.snippets);
+    const diff = useSelector((state: RootState) => state.diff.isDiff);
     
     const loadSnippets = async () => {
         try {
@@ -43,8 +45,11 @@ const Snippets = () => {
     };
 
     useEffect(() => {
-        loadSnippets();
-    }, []);
+        if (diff === true) {
+            loadSnippets();
+            dispatch(unsetDiff());
+        }
+    }, [diff]);
 
     const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -61,28 +66,6 @@ const Snippets = () => {
     return (
         <Box>
             <List>
-                <ListItem 
-                    secondaryAction={
-                        <IconButton 
-                            onClick={(event: MouseEvent<HTMLButtonElement>) => {
-                                handleClick(event)
-                                setMenuTarget("Data Science Instructor")
-                            }}
-                        >
-                            <MoreHorizIcon/>
-                        </IconButton>
-                    }
-                    disableGutters
-                >
-                    <ListItemButton onClick={() => copySnippet("Data Science Instructor")}>
-                        <Tooltip title="Directed student success by teaching 60+ students how to systematically deconstruct problems including a data analytics project using real-world datasets.">
-                            <ListItemIcon>
-                                <PageviewIcon />
-                            </ListItemIcon>    
-                        </Tooltip>
-                        <ListItemText>{"Data Science Instructor"}</ListItemText>
-                    </ListItemButton>
-                </ListItem>
 
                 {Object.keys(snippets).map((title: string) => {
                     return (
@@ -141,6 +124,7 @@ const Snippets = () => {
                 </Link>
                 <MenuItem onClick={() => {
                     dispatch(removeSnippet(menuTarget))
+                    dispatch(setDiff())
                     handleClose()
 
                     // TODO: remove snippet from db
