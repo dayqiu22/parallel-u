@@ -17,10 +17,8 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PageviewIcon from '@mui/icons-material/Pageview';
 import Snippet from "@/models/Snippet";
 import { useSelector, useDispatch } from "react-redux";
-import { addSnippet, setNew, setCurrentSnippet, removeSnippet, setNotNew } from "@/state/snippets/snippetsSlice";
+import { addSnippet, setNew, setCurrentSnippet, removeSnippet, setNotNew, clearSnippets } from "@/state/snippets/snippetsSlice";
 import { RootState, persistor } from '@/state/store';
-
-import mockSnippets from '@/mock.json';
 
 const Snippets = () => {
     const dispatch = useDispatch();
@@ -28,12 +26,24 @@ const Snippets = () => {
     const [menuTarget, setMenuTarget] = useState<string>('');
     const snippets = useSelector((state: RootState) => state.snippets.snippets);
     
-    useEffect(() => {
-        // TODO: async load snippets from db
+    const loadSnippets = async () => {
+        try {
+            const response = await fetch("http://localhost:8080/get_snippets");
+            const data = await response.json();
+            if (data.length > 0) {
+                data.map((snippet : Snippet) => {
+                    dispatch(addSnippet(snippet));
+                })
+            } else {
+                dispatch(clearSnippets());
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
-        mockSnippets.map((snippet : Snippet) => {
-            dispatch(addSnippet(snippet));
-        })
+    useEffect(() => {
+        loadSnippets();
     }, []);
 
     const handleClick = (event: MouseEvent<HTMLButtonElement>) => {

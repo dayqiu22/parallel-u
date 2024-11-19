@@ -24,6 +24,9 @@ const snippetsSlice = createSlice({
             const { [action.payload]: removedItem, ...restItems } = state.snippets;
             state.snippets = restItems
         },
+        clearSnippets: (state) => {
+            state.snippets = {}
+        },
         setCurrentSnippet: (state, action: PayloadAction<string>) => {
             state.currentSnippet = { title: action.payload, text: state.snippets[action.payload]}
         },
@@ -39,6 +42,6 @@ const snippetsSlice = createSlice({
     },
 })
 
-export const {addSnippet, removeSnippet, setCurrentSnippet, clearCurrentSnippet, setNew, setNotNew} = snippetsSlice.actions;
+export const {addSnippet, removeSnippet, clearSnippets, setCurrentSnippet, clearCurrentSnippet, setNew, setNotNew} = snippetsSlice.actions;
 
 export default snippetsSlice.reducer;
