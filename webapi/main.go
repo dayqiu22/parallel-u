@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,9 +19,68 @@ func getSnippets(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, snippets)
 }
 
+func addSnippet(c *gin.Context) {
+	var newSnippet Snippet
+	title := c.Query("title")
+	text := c.Query("text")
+
+	if title == "" || text == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Title or text query parameters are required"})
+		return
+	}
+
+	newSnippet.Title = title
+	newSnippet.Text = text
+
+	snippets = append(snippets, newSnippet)
+	c.IndentedJSON(http.StatusCreated, newSnippet)
+}
+
+func removeSnippetByTitle(c *gin.Context) {
+	title := c.Query("title")
+	if title == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Title query parameter is required"})
+		return
+	}
+
+	for i, snippet := range snippets {
+		if snippet.Title == title {
+			c.IndentedJSON(http.StatusOK, append(snippets[:i], snippets[i+1:]...))
+			return
+		}
+	}
+
+	c.IndentedJSON(http.StatusNotFound, snippets)
+}
+
+func editSnippet(c *gin.Context) {
+	oldTitle := c.Query("oldTitle")
+	newTitle := c.Query("newTitle")
+	text := c.Query("text")
+
+	if newTitle == "" || text == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Title or text query parameters are required"})
+		return
+	}
+
+	for i, snippet := range snippets {
+		if snippet.Title == oldTitle {
+			snippets[i].Title = newTitle
+			snippets[i].Text = text
+			c.IndentedJSON(http.StatusOK, snippets)
+			return
+		}
+	}
+
+	c.IndentedJSON(http.StatusNotFound, snippets)
+}
+
 func main() {
 	router := gin.Default()
 	router.GET("/get_snippets", getSnippets)
+	router.POST("/add_snippet", addSnippet)
+	router.DELETE("/remove_snippet", removeSnippetByTitle)
+	router.PUT("/edit_snippet", editSnippet)
 
 	router.Run("localhost:8080")
 }
