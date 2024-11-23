@@ -26,14 +26,32 @@ const CreateAndEdit = () => {
         setText(e.target.value);
     }
 
+    const addSnippetAsync = async (title : string, text : string) => {
+        try {
+            const response = await fetch(`http://localhost:8080/add_snippet?title=${encodeURIComponent(title)}&text=${encodeURIComponent(text)}`, { method: 'POST'});
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const updateSnippetAsync = async (oldTitle : string, newTitle : string, text : string) => {
+        try {
+            const response = await fetch(`http://localhost:8080/update_snippet?oldTitle=${encodeURIComponent(oldTitle)}&newTitle=${encodeURIComponent(newTitle)}&text=${encodeURIComponent(text)}`, { method: 'PUT'});
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const handleSave = () => {
         if (isNew) {
             dispatch(addSnippet({ title: title, text: text }));
+            addSnippetAsync(title, text);
         } else {
             if (title !== currentSnippet?.title) {
                 dispatch(removeSnippet(currentSnippet?.title || ''));
             }
             dispatch(addSnippet({ title: title, text: text }));
+            updateSnippetAsync(currentSnippet?.title || '', title, text);
         }
 
         dispatch(clearCurrentSnippet());

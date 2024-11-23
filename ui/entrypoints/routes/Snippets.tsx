@@ -33,6 +33,7 @@ const Snippets = () => {
             const response = await fetch("http://localhost:8080/get_snippets");
             const data = await response.json();
             if (data.length > 0) {
+                dispatch(clearSnippets());
                 data.map((snippet : Snippet) => {
                     dispatch(addSnippet(snippet));
                 })
@@ -43,6 +44,14 @@ const Snippets = () => {
             console.error(error);
         }
     };
+
+    const deleteSnippetAsync = async (title : string) => {
+        try {
+            const response = await fetch(`http://localhost:8080/remove_snippet?title=${encodeURIComponent(title)}`, { method: 'DELETE'});
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     useEffect(() => {
         if (diff === true) {
@@ -124,10 +133,9 @@ const Snippets = () => {
                 </Link>
                 <MenuItem onClick={() => {
                     dispatch(removeSnippet(menuTarget))
+                    deleteSnippetAsync(menuTarget)
                     dispatch(setDiff())
                     handleClose()
-
-                    // TODO: remove snippet from db
                 }}>
                     Delete
                 </MenuItem>

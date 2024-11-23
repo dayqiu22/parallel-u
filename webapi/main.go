@@ -45,7 +45,8 @@ func removeSnippetByTitle(c *gin.Context) {
 
 	for i, snippet := range snippets {
 		if snippet.Title == title {
-			c.IndentedJSON(http.StatusOK, append(snippets[:i], snippets[i+1:]...))
+			snippets = append(snippets[:i], snippets[i+1:]...)
+			c.IndentedJSON(http.StatusOK, snippets)
 			return
 		}
 	}
@@ -53,7 +54,7 @@ func removeSnippetByTitle(c *gin.Context) {
 	c.IndentedJSON(http.StatusNotFound, snippets)
 }
 
-func editSnippet(c *gin.Context) {
+func updateSnippet(c *gin.Context) {
 	oldTitle := c.Query("oldTitle")
 	newTitle := c.Query("newTitle")
 	text := c.Query("text")
@@ -80,7 +81,7 @@ func main() {
 	router.GET("/get_snippets", getSnippets)
 	router.POST("/add_snippet", addSnippet)
 	router.DELETE("/remove_snippet", removeSnippetByTitle)
-	router.PUT("/edit_snippet", editSnippet)
+	router.PUT("/update_snippet", updateSnippet)
 
 	router.Run("localhost:8080")
 }
