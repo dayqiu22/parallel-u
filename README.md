@@ -15,6 +15,7 @@ MongoDB was chosen for its scalability and ability to hold numerous snippets for
 
 ## Usage
 Ensure the Chrome Extension is loaded into your browser, and run the backend (localhost).
+For local testing ```npm run dev``` in /ui to start extension. ```go run .\main.go``` in /webapi for backend.
 
 - Chrome Extension:
   - Click *LOGIN*
